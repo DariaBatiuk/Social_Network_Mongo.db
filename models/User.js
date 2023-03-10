@@ -10,21 +10,22 @@ const userSchema = new Schema(
       trim: true,
     },
     email: {
-      type: String,,
-      default: true,
+      type: String,
+      required: true,
+      unique: true,
+			match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'],
     },
-    startDate: {
-      type: Date,
-      default: Date.now(),
-    },
-    endDate: {
-      type: Date,
-      default: () => new Date(+new Date() + 84 * 24 * 60 * 60 * 1000),
-    },
-    students: [
+
+    thoughts: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Student",
+        ref: "Thought",
+      },
+    ],
+		friends: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
       },
     ],
   },
@@ -36,6 +37,10 @@ const userSchema = new Schema(
   }
 );
 
-const User = model("course", userSchema);
+userSchema.virtual('friendCount').get(function () {
+  return this.friends.length;
+});
+
+const User = model("user", userSchema);
 
 module.exports = User;
