@@ -4,7 +4,7 @@ const { Thought, User } = require('../models');
 
 // TODO: Create an aggregate function to get the number of thoughts overall
 const headCount = async () =>
-Thought.aggregate()
+Thought.countDocuments()
     .then((numberOfThoughts) => numberOfThoughts);
 
 // Execute the aggregate method on the Thought model and calculate the overall grade by using the $avg operator

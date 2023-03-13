@@ -124,4 +124,10 @@ module.exports = {
       email: "first@gmail.ca",
     },
   ],
+	// thoughts: [
+  //   {
+  //     thoughtText: "first message",
+  //     username: "first@gmail.ca",
+  //   },
+  // ],
 };
