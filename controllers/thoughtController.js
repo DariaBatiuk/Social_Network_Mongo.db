@@ -41,27 +41,28 @@ module.exports = {
   // Get a single thought
   getSingleThought(req, res) {
     Thought.findOne({ _id: req.params.thoughtId })
-      .select('-__v')
-      .lean()
-      .then(async (student) =>
-        !thought
-          ? res.status(404).json({ message: 'No thought with that ID' })
-          : res.json({
-						 thought,
-              grade: await grade(req.params.thoughtId),
-            })
-      )
+      .then((singleThought) => {
+        res.json(singleThought);
+      })
       .catch((err) => {
         console.log(err);
-        return res.status(500).json(err);
-      });
-  },
+        res.status(500).json(err);
+      })
+  },	
   // create a new thought
-  createThought(req, res) {
-    Thought.create(req.body)
-      .then((thought) => res.json(Thought))
-      .catch((err) => res.status(500).json(err));
-  },
+	createThought(req, res) {
+		Thought.create(req.body)
+			.then((thought) => {
+				User.findOneAndUpdate(
+					{ username: req.body.username },
+					{ $push: { thoughts: thought } },
+					{ new: true }
+				)
+					.then(() => res.json(thought))
+					.catch((err) => res.status(500).json(err));
+			})
+			.catch((err) => res.status(500).json(err));
+	},		
   // Delete a thought and remove them from the User
   deleteThought(req, res) {
     Thought.findOneAndRemove({ _id: req.params.thoughtId })
@@ -70,8 +71,8 @@ module.exports = {
           ? res.status(404).json({ message: 'No such thought exists' })
           : User.findOneAndUpdate(
               { thoughts: req.params.thoughtId },
-              { $pull: { thought: req.params.thoughtId } },
-              { new: true }
+          { $pull: { thoughts: req.params.thoughtId } },
+          { new: true }
             )
       )
       .then((user) =>
@@ -100,13 +101,12 @@ module.exports = {
       )
       .catch((err) => res.status(500).json(err));
   },
-
   // Add a reaction to a Thought
   addReaction(req, res) {
     console.log('You are adding a reaction');
     console.log(req.body);
     Thought.findOneAndUpdate(
-      { _id: req.params.thoughtId },
+      { _id: req.params.username },
       { $addToSet: { reactions: req.body } },
       { runValidators: true, new: true }
     )
