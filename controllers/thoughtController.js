@@ -107,7 +107,7 @@ module.exports = {
     console.log(req.body);
     Thought.findOneAndUpdate(
       { _id: req.params.username },
-      { $addToSet: { reactions: req.body } },
+      { $addToSet: { reactions: req.body.reactionId } },
       { runValidators: true, new: true }
     )
       .then((thought) =>
